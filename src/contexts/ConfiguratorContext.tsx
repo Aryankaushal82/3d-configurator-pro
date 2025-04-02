@@ -2,23 +2,25 @@
 import React, { createContext, useContext, useState, useCallback, useMemo, ReactNode } from 'react';
 
 // Define types
-export type HandleType = '603-02 Hardware 1' | '603-02 Hardware 2';
-export type LegType = 'Leg A' | 'Leg B';
-export type MaterialCategory = 'LEATHER' | 'SILICON' | 'ALUMINIUM';
+export type HandleType = '603-02-Hardware-1' | '603-02-Hardware-2';
+export type LegType = 'Leg-A' | 'Leg-B';
+export type MaterialCategory = 'TEXTURE';
 export type MaterialFinish = string;
 
 export interface Material {
   id: string;
   name: string;
-  color: string;
+  image: string;
   category: MaterialCategory;
   price: number;
+  finish?: MaterialFinish; // Optional finish property
 }
 
 export interface ConfiguratorState {
   selectedHandle: HandleType;
   selectedLeg: LegType;
   selectedMaterial: Material | null;
+  handleColor: string; // New property for handle color
   basePrice: number;
   totalPrice: number;
   backgroundSetting: 'light' | 'dark' | 'gradient';
@@ -30,45 +32,52 @@ interface ConfiguratorContextType {
   setSelectedHandle: (handle: HandleType) => void;
   setSelectedLeg: (leg: LegType) => void;
   setSelectedMaterial: (material: Material) => void;
+  setHandleColor: (color: string) => void; // New function for handle color
   setBackgroundSetting: (setting: 'light' | 'dark' | 'gradient') => void;
   toggleFullscreen: () => void;
   materials: Material[];
+  getMaterialsByCategory: (category: MaterialCategory) => Material[];
 }
 
 // Create context
 const ConfiguratorContext = createContext<ConfiguratorContextType | null>(null);
 
-// Sample materials data
+// Sample materials data with improved colors
 const initialMaterials: Material[] = [
-  // LEATHER category
-  { id: 'l1', name: 'Brown', color: '#5d4037', category: 'LEATHER', price: 50 },
-  { id: 'l2', name: 'Forest', color: '#4b6043', category: 'LEATHER', price: 55 },
-  { id: 'l3', name: 'Moss', color: '#637356', category: 'LEATHER', price: 55 },
-  { id: 'l4', name: 'Sage', color: '#5a6750', category: 'LEATHER', price: 60 },
-  { id: 'l5', name: 'Eggplant', color: '#4a2c40', category: 'LEATHER', price: 65 },
-  { id: 'l6', name: 'Plum', color: '#7c4a72', category: 'LEATHER', price: 70 },
-  { id: 'l7', name: 'Navy', color: '#2e4756', category: 'LEATHER', price: 60 },
-  { id: 'l8', name: 'Rust', color: '#b53d34', category: 'LEATHER', price: 65 },
-  { id: 'l9', name: 'Maroon', color: '#702a2a', category: 'LEATHER', price: 70 },
-  { id: 'l10', name: 'Teal', color: '#056e63', category: 'LEATHER', price: 75 },
-  
-  // SILICON category
-  { id: 's1', name: 'Brown', color: '#6d4c41', category: 'SILICON', price: 30 },
-  { id: 's2', name: 'Forest', color: '#546e41', category: 'SILICON', price: 35 },
-  { id: 's3', name: 'Moss', color: '#748456', category: 'SILICON', price: 35 },
-  { id: 's4', name: 'Sage', color: '#6a7750', category: 'SILICON', price: 40 },
-  { id: 's5', name: 'Eggplant', color: '#5a3c50', category: 'SILICON', price: 45 },
-  
-  // ALUMINIUM category - will be rendered as metallic in the 3D model
-  { id: 'a1', name: 'Silver', color: '#CCCCCC', category: 'ALUMINIUM', price: 25 },
+  { id: 't1', name: 'Bitmore', image: 'Bitmore.png', category: 'TEXTURE', price: 50 },
+  { id: 't2', name: 'Brighton', image: 'Brighton.png', category: 'TEXTURE', price: 55 },
+  { id: 't3', name: 'Cafelle', image: 'Cafelle.png', category: 'TEXTURE', price: 55 },
+  { id: 't4', name: 'Cocoballa', image: 'Cocoballa.png', category: 'TEXTURE', price: 60 },
+  { id: 't5', name: 'Columbian', image: 'Columbian.png', category: 'TEXTURE', price: 65 },
+  { id: 't6', name: 'Empire', image: 'Empire.png', category: 'TEXTURE', price: 70 },
+  { id: 't7', name: 'Fonthill', image: 'Fonthill.png', category: 'TEXTURE', price: 60 },
+  { id: 't8', name: 'Macadamia Nut', image: 'Macadamia Nut.png', category: 'TEXTURE', price: 65 },
+  { id: 't9', name: 'Natural Ash', image: 'Natural Ash.png', category: 'TEXTURE', price: 70 },
+  { id: 't10', name: 'Raya', image: 'Raya.png', category: 'TEXTURE', price: 75 },
+  { id: 't11', name: 'River Cherry', image: 'River Cherry.png', category: 'TEXTURE', price: 80 },
+  { id: 't12', name: 'Studio Teak', image: 'Studio Teak.png', category: 'TEXTURE', price: 85 },
+  { id: 't13', name: 'White Cypress', image: 'White Cypress.png', category: 'TEXTURE', price: 90 },
+  { id: 't14', name: 'Williamsburg', image: 'Williamsburg.png', category: 'TEXTURE', price: 95 },
+  { id: 't15', name: 'Windsor', image: 'Windsor.png', category: 'TEXTURE', price: 100 },
+  { id: 't16', name: 'Amber', image: 'Amber.png', category: 'TEXTURE', price: 105 },
+];
+
+// Handle color options
+export const handleColors = [
+  { id: 'silver', name: 'Silver', value: '#C0C0C0', price: 0 },
+  { id: 'gold', name: 'Gold', value: '#FFD700', price: 20 },
+  { id: 'bronze', name: 'Bronze', value: '#CD7F32', price: 15 },
+  { id: 'chrome', name: 'Chrome', value: '#E8E8E8', price: 10 },
+  { id: 'black', name: 'Black', value: '#333333', price: 5 },
 ];
 
 // Provider component
 export const ConfiguratorProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [state, setState] = useState<ConfiguratorState>({
-    selectedHandle: '603-02 Hardware 1',
-    selectedLeg: 'Leg A',
+  const [state, setState] = useState({
+    selectedHandle: '603-02-Hardware-1',
+    selectedLeg: 'Leg-A',
     selectedMaterial: initialMaterials[0], // Default to first material
+    handleColor: handleColors[0].value, // Default handle color
     basePrice: 150,
     totalPrice: 200, // Base price + default material
     backgroundSetting: 'light',
@@ -79,7 +88,13 @@ export const ConfiguratorProvider: React.FC<{ children: ReactNode }> = ({ childr
     setState(prev => ({
       ...prev,
       selectedHandle: handle,
-      totalPrice: calculateTotalPrice(prev.basePrice, prev.selectedMaterial, handle, prev.selectedLeg),
+      totalPrice: calculateTotalPrice(
+        prev.basePrice, 
+        prev.selectedMaterial, 
+        handle, 
+        prev.selectedLeg, 
+        prev.handleColor
+      ),
     }));
   }, []);
 
@@ -87,7 +102,13 @@ export const ConfiguratorProvider: React.FC<{ children: ReactNode }> = ({ childr
     setState(prev => ({
       ...prev,
       selectedLeg: leg,
-      totalPrice: calculateTotalPrice(prev.basePrice, prev.selectedMaterial, prev.selectedHandle, leg),
+      totalPrice: calculateTotalPrice(
+        prev.basePrice, 
+        prev.selectedMaterial, 
+        prev.selectedHandle, 
+        leg, 
+        prev.handleColor
+      ),
     }));
   }, []);
 
@@ -95,7 +116,28 @@ export const ConfiguratorProvider: React.FC<{ children: ReactNode }> = ({ childr
     setState(prev => ({
       ...prev,
       selectedMaterial: material,
-      totalPrice: calculateTotalPrice(prev.basePrice, material, prev.selectedHandle, prev.selectedLeg),
+      totalPrice: calculateTotalPrice(
+        prev.basePrice, 
+        material, 
+        prev.selectedHandle, 
+        prev.selectedLeg, 
+        prev.handleColor
+      ),
+    }));
+  }, []);
+
+  // New handler for handle color
+  const setHandleColor = useCallback((color: string) => {
+    setState(prev => ({
+      ...prev,
+      handleColor: color,
+      totalPrice: calculateTotalPrice(
+        prev.basePrice, 
+        prev.selectedMaterial, 
+        prev.selectedHandle, 
+        prev.selectedLeg, 
+        color
+      ),
     }));
   }, []);
 
@@ -111,7 +153,8 @@ export const ConfiguratorProvider: React.FC<{ children: ReactNode }> = ({ childr
     basePrice: number, 
     material: Material | null, 
     handle: HandleType, 
-    leg: LegType
+    leg: LegType,
+    handleColor: string
   ): number => {
     let total = basePrice;
     
@@ -121,33 +164,46 @@ export const ConfiguratorProvider: React.FC<{ children: ReactNode }> = ({ childr
     }
     
     // Handle specific pricing
-    if (handle === '603-02 Hardware 2') {
+    if (handle === '603-02-Hardware-2') {
       total += 15; // Premium handle costs more
     }
     
     // Leg specific pricing
-    if (leg === 'Leg B') {
+    if (leg === 'Leg-B') {
       total += 10; // Premium leg costs more
     }
     
+    // Handle color pricing
+    const selectedColorPrice = handleColors.find(c => c.value === handleColor)?.price || 0;
+    total += selectedColorPrice;
+    
     return total;
   };
+
+  // Helper function to filter materials by category
+  const getMaterialsByCategory = useCallback((category: MaterialCategory) => {
+    return initialMaterials.filter(material => material.category === category);
+  }, []);
 
   const contextValue = useMemo(() => ({
     state,
     setSelectedHandle,
     setSelectedLeg,
     setSelectedMaterial,
+    setHandleColor,
     setBackgroundSetting,
     toggleFullscreen,
     materials: initialMaterials,
+    getMaterialsByCategory,
   }), [
     state, 
     setSelectedHandle, 
     setSelectedLeg,
     setSelectedMaterial,
+    setHandleColor,
     setBackgroundSetting,
-    toggleFullscreen
+    toggleFullscreen,
+    getMaterialsByCategory
   ]);
 
   return (
