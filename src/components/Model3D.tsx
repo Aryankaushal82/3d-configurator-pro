@@ -1,6 +1,6 @@
 
 import React, { useRef, useEffect, useState, useMemo } from 'react';
-import { useGLTF, useTexture, ContactShadows, Environment, OrbitControls } from '@react-three/drei';
+import { ContactShadows, Environment, OrbitControls } from '@react-three/drei';
 import { Canvas, useThree, useFrame } from '@react-three/fiber';
 import { Suspense } from 'react';
 import * as THREE from 'three';
@@ -44,7 +44,7 @@ const FurnitureModel: React.FC = () => {
   useEffect(() => {
     if (state.selectedMaterial) {
       const newMaterial = new MeshStandardMaterial({
-        color: state.selectedMaterial.color,
+        color: new THREE.Color(state.selectedMaterial.color),
         metalness: state.selectedMaterial.category === 'ALUMINIUM' ? 0.8 : 0.1,
         roughness: state.selectedMaterial.category === 'ALUMINIUM' ? 0.2 : 0.7,
       });
@@ -104,19 +104,19 @@ const FurnitureModel: React.FC = () => {
       {state.selectedHandle === '603-02 Hardware 1' ? (
         <>
           <mesh geometry={handleGeometry} position={[-0.4, 0.3, 0.4]} rotation={[Math.PI/2, 0, 0]}>
-            <meshStandardMaterial color="#FFD700" metalness={0.8} roughness={0.2} />
+            <meshStandardMaterial color={new THREE.Color("#FFD700")} metalness={0.8} roughness={0.2} />
           </mesh>
           <mesh geometry={handleGeometry} position={[0.4, 0.3, 0.4]} rotation={[Math.PI/2, 0, 0]}>
-            <meshStandardMaterial color="#FFD700" metalness={0.8} roughness={0.2} />
+            <meshStandardMaterial color={new THREE.Color("#FFD700")} metalness={0.8} roughness={0.2} />
           </mesh>
         </>
       ) : (
         <>
           <mesh geometry={handleGeometry} position={[-0.4, 0.3, 0.4]} rotation={[0, 0, Math.PI/2]}>
-            <meshStandardMaterial color="#FFD700" metalness={0.8} roughness={0.2} />
+            <meshStandardMaterial color={new THREE.Color("#FFD700")} metalness={0.8} roughness={0.2} />
           </mesh>
           <mesh geometry={handleGeometry} position={[0.4, 0.3, 0.4]} rotation={[0, 0, Math.PI/2]}>
-            <meshStandardMaterial color="#FFD700" metalness={0.8} roughness={0.2} />
+            <meshStandardMaterial color={new THREE.Color("#FFD700")} metalness={0.8} roughness={0.2} />
           </mesh>
         </>
       )}

@@ -3,6 +3,28 @@ import React, { useEffect, useRef } from 'react';
 import QRCode from 'qrcode.react';
 import { useConfigurator } from '../contexts/ConfiguratorContext';
 
+// Add type declaration for model-viewer
+declare global {
+  namespace JSX {
+    interface IntrinsicElements {
+      'model-viewer': React.DetailedHTMLProps<
+        React.HTMLAttributes<HTMLElement> & {
+          src?: string;
+          ar?: boolean;
+          'ar-modes'?: string;
+          'camera-controls'?: boolean;
+          'shadow-intensity'?: string;
+          'auto-rotate'?: boolean;
+          'ar-scale'?: string;
+          'interaction-prompt'?: string;
+          alt?: string;
+        },
+        HTMLElement
+      >;
+    }
+  }
+}
+
 // This component will use the model-viewer web component for AR
 const ARViewer: React.FC<{ visible: boolean; onClose: () => void }> = ({ visible, onClose }) => {
   const { state } = useConfigurator();
@@ -53,7 +75,7 @@ const ARViewer: React.FC<{ visible: boolean; onClose: () => void }> = ({ visible
         <div className="flex flex-col md:flex-row">
           <div className="w-full md:w-2/3 h-96">
             <model-viewer
-              ref={modelViewerRef as React.RefObject<HTMLElement>}
+              ref={modelViewerRef}
               ar
               ar-modes="webxr scene-viewer quick-look"
               camera-controls
