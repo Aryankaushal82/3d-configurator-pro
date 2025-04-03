@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import Model3D from '../components/Model3D';
 import ViewerControls from '../components/ViewerControls';
 import ConfiguratorPanel from '../components/ConfiguratorPanel';
@@ -9,25 +9,16 @@ import { Smartphone } from 'lucide-react';
 
 const Configurator: React.FC = () => {
   const [showAR, setShowAR] = useState(false);
-  
+  const configuredSceneRef = useRef();
   return (
     <ConfiguratorProvider>
       <div className="h-screen flex flex-col md:flex-row overflow-hidden">
         {/* 3D Viewer Section */}
         <div className="relative w-full md:w-2/3 h-1/2 md:h-full bg-gray-100">
-          <Model3D />
+          <Model3D ref={configuredSceneRef} />
           <ViewerControls />
           
           {/* AR View Button */}
-          <div className="absolute bottom-6 right-6 z-10">
-            <button 
-              className="flex items-center space-x-2 bg-white py-2 px-4 rounded-md shadow-lg hover:bg-gray-50 transition-colors"
-              onClick={() => setShowAR(true)}
-            >
-              <Smartphone size={20} />
-              <span>View in your room</span>
-            </button>
-          </div>
           
           {/* Logo */}
           <div className="absolute top-6 left-6 z-10">
@@ -44,14 +35,19 @@ const Configurator: React.FC = () => {
           <ConfiguratorPanel />
         </div>
         
-        {/* AR Viewer Modal */}
+      {/* AR Viewer: Only shows when showAR is true */}
+      {showAR && (
         <ARViewer 
           visible={showAR} 
-          onClose={() => setShowAR(false)} 
+          scene={configuredSceneRef.current} 
+          onClose={() => setShowAR(false)}
         />
+      )}
       </div>
     </ConfiguratorProvider>
   );
 };
 
 export default Configurator;
+
+
