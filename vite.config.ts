@@ -9,9 +9,6 @@ export default defineConfig(({ mode }) => ({
     host: "::",
     port: 8080,
   },
-  mimeTypes: {
-    'text/javascript': ['js', 'tsx'] // Force .tsx as text/javascript
-  },
   plugins: [
     react(),
     mode === 'development' &&
